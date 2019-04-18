@@ -1,0 +1,150 @@
+    
+Marijn,
+basic joins 
+//1 Relatively easy
+
+de eerste
+
+select tblAuthor.AuthorName, tblEpisode.Title, tblEpisode.EpisodeType
+from tblAuthor
+inner join tblEpisode on 
+tblAuthor.AuthorId = tblEpisode.AuthorId
+where EpisodeType like '%special'
+order by Title;
+
+hellemaal links onderaan
+
+select * from tblContinent, tblCountry, tblEvent
+where ContinentName ='Antartica' or CountryName ='Russia';
+
+SQL exercises on CALCULATIONS
+
+de eerste 
+
+SELECT EventName, LEN(EventName)as 'Length of name'
+from tblEvent
+order by 'Length of name';
+https://www.wiseowl.co.uk/sql/exercises/standard/calculations/
+https://www.wiseowl.co.uk/sql/exercises/standard/basic-joins/
+
+Yari
+SQL exercises on CALCULATIONS
+https://www.wiseowl.co.uk/sql/exercises/standard/calculations/
+
+de vierde(twee naar recht dan een omlaag)
+
+SELECT
+EventName,
+EventDate
+FROM tblEvent
+where EventDetails like '%this% that%' 
+
+de tweede
+
+SELECT
+Country
+, KmSquared
+, ROUND(KmSquared/20761, 0) as 'WalesUnits'
+, (Kmsquared % 20761) as 'AreaLeftOver'
+, CASE 
+            WHEN 
+                      CAST(ROUND((KmSquared/20761), 0) as varchar(10)) < 1 
+            THEN 
+                      'Smaller than Wales'
+            ELSE 
+                      CAST(ROUND((KmSquared/20761), 0) as VARCHAR(10)) +  ' x '  +  ' Wales plus ' + 
+                      CAST( (KmSquared % 20761) as VARCHAR(10)) + ' sq. km.' 
+             END as 'Wales Comparison'
+FROM
+CountriesByArea
+Order By ABS(KmSquared - 20761)
+
+SQL exercises on AGGREGATION AND GROUPING
+https://www.wiseowl.co.uk/sql/exercises/standard/aggregation-and-grouping/
+
+de tweede
+
+SELECT tblAuthor.AuthorName, tblDoctor.DoctorName, COUNT(tblEpisode.EpisodeId) AS 'Episodes' 
+FROM tblAuthor
+INNER JOIN tblEpisode ON tblAuthor.AuthorId = tblEpisode.AuthorId
+INNER JOIN tblDoctor ON tblEpisode.DoctorId = tblDoctor.DoctorId
+GROUP BY tblAuthor.AuthorName, tblDoctor.DoctorName
+HAVING COUNT(tblEpisode.EpisodeId) > 5
+ORDER BY [Episodes] DESC;
+
+
+Sanne
+
+SQL exercises on CALCULATIONS USING DATES
+https://www.wiseowl.co.uk/sql/exercises/standard/calculations-using-dates/
+
+de laatste
+SELECT EventName,
+CASE WHEN DATENAME(DAY, EventDate) = 1 THEN DATENAME(WEEKDAY, EventDate) + ' ' + DATENAME(DAY, EventDate) + 'st ' + DATENAME(MONTH, EventDate) + ' ' + DATENAME(YEAR, EventDate)
+	 WHEN DATENAME(DAY, EventDate) = 2 THEN DATENAME(WEEKDAY, EventDate) + ' ' + DATENAME(DAY, EventDate) + 'nd ' + DATENAME(MONTH, EventDate) + ' ' + DATENAME(YEAR, EventDate)
+	 WHEN DATENAME(DAY, EventDate) = 3 THEN DATENAME(WEEKDAY, EventDate) + ' ' + DATENAME(DAY, EventDate) + 'rd ' + DATENAME(MONTH, EventDate) + ' ' + DATENAME(YEAR, EventDate)
+	 ELSE DATENAME(WEEKDAY, EventDate) + ' ' + DATENAME(DAY, EventDate) + 'th ' + DATENAME(MONTH, EventDate) + ' ' + DATENAME(YEAR, EventDate)
+END AS 'True full date'
+FROM tblEvent
+ORDER BY EventDate;
+
+de tweede 
+SELECT EventName, EventDate, 
+DATENAME(WEEKDAY, EventDate) AS 'Days of week', 
+DATENAME(DAY, EventDate) AS 'Days number'
+FROM tblEvent
+WHERE DATENAME(WEEKDAY, EventDate) = 'Friday' AND DATENAME(DAY, EventDate) = 13
+OR DATENAME(WEEKDAY, EventDate) = 'Thursday' AND DATENAME(DAY, EventDate) = 12
+OR DATENAME(WEEKDAY, EventDate) = 'Saturday' AND DATENAME(DAY, EventDate) = 14;
+
+SQL exercises on SUBQUERIES
+de eerste
+SELECT tblEvent.EventName, tblEvent.EventDate, 
+(SELECT CountryName FROM tblCountry WHERE tblCountry.CountryID = tblEvent.CountryID ) as 'CountryName' 
+FROM tblEvent
+WHERE tblEvent.EventDate > (
+SELECT MAX(tblEvent.EventDate)
+FROM tblEvent
+WHERE tblEvent.CountryID = 21)
+ORDER BY tblEvent.EventDate DESC;
+
+
+cornee,
+
+SQL exercises on AGGREGATION AND GROUPING
+https://www.wiseowl.co.uk/sql/exercises/standard/aggregation-and-grouping/
+
+de tweede van links
+
+SELECT tblCategory.CategoryName, COUNT(tblEvent.EventID) AS 'Number of events' 
+FROM tblCategory
+INNER JOIN tblEvent ON tblCategory.CategoryID = tblEvent.CategoryID
+GROUP BY tblCategory.CategoryName
+ORDER BY [Number of events] DESC;
+
+rechts onderaan
+
+SELECT 
+CASE 
+WHEN DATEPART(YY,tblEvent.EventDate) like '18%' THEN '19th Century'
+WHEN DATEPART(YY,tblEvent.EventDate) like '17%' THEN '18th Century'
+WHEN DATEPART(YY,tblEvent.EventDate) like '19%' THEN '20th Century'
+WHEN DATEPART(YY,tblEvent.EventDate) like '20%' THEN '21st Century'
+END AS Century,COUNT(tblEvent.EventName) AS NumberOfEvents
+FROM tblEvent
+GROUP BY CUBE(CASE 
+WHEN DATEPART(YY,tblEvent.EventDate) like '18%' THEN '19th Century'
+WHEN DATEPART(YY,tblEvent.EventDate) like '17%' THEN '18th Century'
+WHEN DATEPART(YY,tblEvent.EventDate) like '19%' THEN '20th Century'
+WHEN DATEPART(YY,tblEvent.EventDate) like '20%' THEN '21st Century'
+END)
+ORDER BY NumberOfEvents DESC
+
+SQL exercises on SUBQUERIES
+https://www.wiseowl.co.uk/sql/exercises/standard/subqueries/
+de tweede
+
+SELECT Countryname 
+FROM tblCountry 
+WHERE (SELECT COUNT(CountryID) FROM tblEvent WHERE tblEvent.CountryID = tblCountry.CountryID) > 8
+ORDER BY Countryname;
